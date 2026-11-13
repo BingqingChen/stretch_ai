@@ -1,5 +1,10 @@
 # Stretch AI
 
+> Note: This demo repo is for Stretch RE1, RE2 and SE3. If you are looking for AI capabilities for Stretch 4, please visit https://github.com/hello-robot/stretch4_ai/.
+
+
+> Security notice: It has been reported that there is a known remote execution vulnerability when running the code in this repository. The vulnerability arises from the use of pyzmq's `recv_pyobj()` to deserialize incoming messages on port 4402 with `pickle`. If you are using the transport capabilities in this repository, it is recommended to locally patch this bug, or limit access to the client machine and robot on your network.
+
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-3100/)
 [![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
