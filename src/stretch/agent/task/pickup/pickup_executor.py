@@ -306,7 +306,13 @@ class PickupExecutor:
                 else:
                     self.agent.go_home()
             elif command == "explore":
-                self.agent.explore()
+                # explore(N) runs N frontier-exploration steps; explore() uses the default.
+                steps = int(args) if str(args).strip().isdigit() else 3
+                if self.agent.get_voxel_map().is_empty():
+                    # Exploration plans over the map; with no map, the robot's own position looks
+                    # unsafe and planning never starts. Scan the surroundings first, as find() does.
+                    self.agent.rotate_in_place()
+                self.agent.run_exploration(explore_iter=steps)
             elif command == "find":
                 self._find(args)
             elif command == "nod_head":

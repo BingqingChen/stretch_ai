@@ -262,7 +262,7 @@ class PickupPromptBuilder(AbstractPromptBuilder):
                 commands.append(line)
             elif line.startswith("go_home()"):
                 commands.append(line)
-            elif line.startswith("explore()"):
+            elif line.startswith("explore("):
                 commands.append(line)
             elif line.startswith("nod_head()"):
                 commands.append(line)
@@ -297,8 +297,9 @@ class PickupPromptBuilder(AbstractPromptBuilder):
                 parsed_commands.append(("wave", ""))
             elif command.startswith("go_home()"):
                 parsed_commands.append(("go_home", ""))
-            elif command.startswith("explore()"):
-                parsed_commands.append(("explore", ""))
+            elif command.startswith("explore("):
+                # explore() or explore(N); N is the number of exploration steps
+                parsed_commands.append(("explore", command[len("explore(") : -1].strip()))
             elif command.startswith("nod_head()"):
                 parsed_commands.append(("nod_head", ""))
             elif command.startswith("shake_head()"):
