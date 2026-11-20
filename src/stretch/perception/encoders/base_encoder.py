@@ -19,6 +19,17 @@ from numpy import ndarray
 from torch import Tensor
 
 
+def as_embedding_tensor(features) -> Tensor:
+    """Return the embedding tensor from a Hugging Face get_*_features() result.
+
+    transformers v5 returns a BaseModelOutputWithPooling (embedding in .pooler_output) where
+    older versions returned the tensor itself.
+    """
+    if isinstance(features, Tensor):
+        return features
+    return features.pooler_output
+
+
 class BaseImageTextEncoder(abc.ABC):
     """
     Encodes images, encodes text, and allows comparisons between the two encoding.
