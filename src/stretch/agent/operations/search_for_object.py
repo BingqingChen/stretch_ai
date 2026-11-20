@@ -98,8 +98,18 @@ class ManagedSearchOperation(ManagedOperation):
         return False
 
     def is_name_match(self, name: str) -> bool:
-        """Check if the name of the object is a match for the target object class. By default, we check if the object class is in the name of the object."""
-        return self.object_class in name
+        """Check if the name of the object is a match for the target object class.
+
+        Matches if the target is in the detector's class name ("door" matches "closet door"), or
+        if the target and class name share a head noun (last word), so a description like
+        "green chair" matches class "chair" or "office_chair" (the detector has no color classes)
+        but not "chair_mat".
+        """
+        if self.object_class in name:
+            return True
+        target_words = self.object_class.lower().split()
+        name_words = name.lower().replace("_", " ").split()
+        return len(target_words) > 0 and len(name_words) > 0 and target_words[-1] == name_words[-1]
 
 
 class SearchForReceptacleOperation(ManagedSearchOperation):
@@ -320,9 +330,10 @@ class SearchForObjectOnFloorOperation(ManagedSearchOperation):
                         )
                         self.agent.current_object = instance
                         break
-            else:
-                # If we don't find a match, since you are going through instances in the order of their similarity,
-                # we can break out of the loop early.
+            elif self.match_method == "feature":
+                # Instances are sorted by similarity, so once one falls below the feature
+                # threshold, the rest do too: stop early. With class matching, a lower-ranked
+                # instance can still have the right class, so keep looking.
                 break
 
         # Check to see if there is a visitable frontier
