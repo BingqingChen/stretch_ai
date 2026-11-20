@@ -47,6 +47,13 @@ logger = Logger(__name__)
     type=click.Choice(get_llm_choices()),
 )
 @click.option(
+    "--llm_model",
+    "--llm-model",
+    default="",
+    help="Model name for the LLM client, e.g. a model served by an OpenAI-compatible server "
+    "(set OPENAI_BASE_URL and OPENAI_API_KEY). Leave empty for the client's default.",
+)
+@click.option(
     "--realtime",
     "--real-time",
     "--enable-realtime-updates",
@@ -129,6 +136,7 @@ def main(
     receptacle: str = "",
     match_method: str = "feature",
     llm: str = "gemma",
+    llm_model: str = "",
     use_llm: bool = False,
     use_voice: bool = False,
     open_loop: bool = False,
@@ -192,7 +200,8 @@ def main(
     # Get the LLM client
     llm_client = None
     if use_llm:
-        llm_client = get_llm_client(llm, prompt=prompt)
+        llm_kwargs = {"model": llm_model} if llm_model else {}
+        llm_client = get_llm_client(llm, prompt=prompt, **llm_kwargs)
         chat_wrapper = LLMChatWrapper(llm_client, prompt=prompt, voice=use_voice)
 
     # Parse things and listen to the user

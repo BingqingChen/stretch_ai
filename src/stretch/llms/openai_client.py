@@ -8,6 +8,7 @@
 # license information maybe found below, if so.
 
 import base64
+import re
 from io import BytesIO
 from typing import Any, Dict, Optional, Union
 
@@ -108,7 +109,10 @@ class OpenaiClient(AbstractLLMClient):
                 {"role": "user", "content": command},
             ],
         )
-        output_text = completion.choices[0].message.content
+        output_text = completion.choices[0].message.content or ""
+        # Reasoning models served without a reasoning parser (e.g. Qwen3 on vLLM) put their
+        # chain of thought in the reply; keep only the final answer.
+        output_text = re.sub(r"<think>.*?</think>", "", output_text, flags=re.DOTALL).strip()
         if verbose:
             print(f"output_text={output_text}")
         return output_text
